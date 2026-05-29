@@ -22,7 +22,7 @@ interface V86Options {
   autostart: boolean;
 }
 
-type V86Event = "serial0-output-byte" | "emulator-stopped";
+type V86Event = "serial0-output-byte" | "emulator-stopped" | "download-progress";
 
 interface BootConfig {
   readonly wasmPath: string;
@@ -46,7 +46,7 @@ const BOOT_CONFIG: BootConfig = {
   bzimageUrl: "bzImage",
   initrdUrl: "initramfs.cpio.gz",
   kernelCmdline: "rw console=ttyS0 tsc=reliable",
-  memorySize: 256 * 1024 * 1024,
+  memorySize: 64 * 1024 * 1024,
   vgaMemorySize: 2 * 1024 * 1024,
   redirectUrl: "https://yutarowatanabe.com",
   promptPattern: "guest@cli.yutarowatanabe.com",
@@ -169,12 +169,23 @@ window.onload = () => {
   const terminal = queryElement("terminal");
   const loadingScreen = queryElement("loading-screen");
   const loadingArt = queryElement("loading-art");
+  const loadingText = queryElement("loading-text");
+  const progressBar = queryElement("progress-bar") as HTMLDivElement;
   const bootLogEl = queryElement("boot-log");
   const watcher = new SerialWatcher();
   const bootLog = new BootLog(bootLogEl);
 
   loadAsciiArt(loadingArt);
   const emulator = createEmulator(terminal);
+
+  emulator.add_listener("download-progress", (data: { file_index: number; file_count: number; file_name: string; loaded: number; total: number }) => {
+    if (data.total > 0) {
+      const pct = Math.round((data.loaded / data.total) * 100);
+      const name = data.file_name.split("/").pop() ?? data.file_name;
+      loadingText.textContent = `Loading ${name}... ${pct}%`;
+      progressBar.style.width = `${pct}%`;
+    }
+  });
 
   emulator.add_listener("serial0-output-byte", (byte: number) => {
     const char = String.fromCharCode(byte);

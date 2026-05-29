@@ -5,8 +5,7 @@ ENV KERNEL=virt
 # Install base system, kernel, and our tools
 RUN apk add openrc alpine-base agetty alpine-conf \
     linux-$KERNEL linux-firmware-none \
-    vim python3 nodejs git tree nano \
-    bash sudo cpio
+    bash sudo cpio nano tree
 
 # Register bash as a valid login shell
 RUN grep -q /bin/bash /etc/shells || echo /bin/bash >> /etc/shells

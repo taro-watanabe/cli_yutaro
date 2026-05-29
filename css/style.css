@@ -74,6 +74,28 @@ html, body {
     display: none;
 }
 
+#progress-bar-container {
+    width: 60%;
+    max-width: 400px;
+    height: 6px;
+    background: #222;
+    border-radius: 3px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+#progress-bar-container:has(#progress-bar[style*="width: 0%"]) {
+    visibility: hidden;
+}
+
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #00ff41;
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
 #terminal {
     width: 100%;
     height: 100%;
