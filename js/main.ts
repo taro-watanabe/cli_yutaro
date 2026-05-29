@@ -12,11 +12,8 @@ interface V86Options {
   vga_memory_size: number;
   bios: { url: string };
   vga_bios: { url: string };
-  filesystem: {
-    baseurl: string;
-    basefs: string;
-  };
-  bzimage_initrd_from_filesystem: boolean;
+  bzimage: { url: string };
+  initrd: { url: string };
   cmdline: string;
   serial_console: {
     type: "xtermjs";
@@ -31,8 +28,8 @@ interface BootConfig {
   readonly wasmPath: string;
   readonly biosUrl: string;
   readonly vgabiosUrl: string;
-  readonly rootfsBase: string;
-  readonly rootfsManifest: string;
+  readonly bzimageUrl: string;
+  readonly initrdUrl: string;
   readonly kernelCmdline: string;
   readonly memorySize: number;
   readonly vgaMemorySize: number;
@@ -46,11 +43,10 @@ const BOOT_CONFIG: BootConfig = {
   wasmPath: "v86.wasm",
   biosUrl: "seabios.bin",
   vgabiosUrl: "vgabios.bin",
-  rootfsBase: "alpine-rootfs-flat",
-  rootfsManifest: "alpine-fs.json",
-  kernelCmdline:
-    "rw root=host9p rootfstype=9p rootflags=trans=virtio,cache=loose modules=virtio_pci tsc=reliable console=ttyS0",
-  memorySize: 128 * 1024 * 1024,
+  bzimageUrl: "bzImage",
+  initrdUrl: "initramfs.cpio.gz",
+  kernelCmdline: "rw console=ttyS0 tsc=reliable",
+  memorySize: 256 * 1024 * 1024,
   vgaMemorySize: 2 * 1024 * 1024,
   redirectUrl: "https://yutarowatanabe.com",
   promptPattern: "guest@cli.yutarowatanabe.com",
@@ -142,11 +138,8 @@ function createEmulator(container: HTMLElement): V86Emulator {
     vga_memory_size: BOOT_CONFIG.vgaMemorySize,
     bios: { url: BOOT_CONFIG.biosUrl },
     vga_bios: { url: BOOT_CONFIG.vgabiosUrl },
-    filesystem: {
-      baseurl: BOOT_CONFIG.rootfsBase,
-      basefs: BOOT_CONFIG.rootfsManifest,
-    },
-    bzimage_initrd_from_filesystem: true,
+    bzimage: { url: BOOT_CONFIG.bzimageUrl },
+    initrd: { url: BOOT_CONFIG.initrdUrl },
     cmdline: BOOT_CONFIG.kernelCmdline,
     serial_console: { type: "xtermjs", container },
     autostart: true,
@@ -157,7 +150,7 @@ function hideLoadingScreen(loadingScreen: HTMLElement): void {
   loadingScreen.classList.add("hidden");
 }
 
-function redirectToPortfolio(): void {
+function redirectToSite(): void {
   window.location.href = BOOT_CONFIG.redirectUrl;
 }
 
@@ -195,12 +188,12 @@ window.onload = () => {
 
     if (state.halted) {
       bootLog.flush();
-      redirectToPortfolio();
+      redirectToSite();
     }
   });
 
   emulator.add_listener("emulator-stopped", () => {
-    redirectToPortfolio();
+    redirectToSite();
   });
 
   setTimeout(() => {

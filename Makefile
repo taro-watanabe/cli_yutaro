@@ -5,7 +5,7 @@ V86_RELEASE := https://github.com/copy/v86/releases/download/latest
 V86_RAW := https://raw.githubusercontent.com/copy/v86/master
 XTERM_CDN := https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0
 
-deps: $(BUILD_DIR)/libv86.js $(BUILD_DIR)/v86.wasm $(BUILD_DIR)/seabios.bin $(BUILD_DIR)/vgabios.bin $(BUILD_DIR)/xterm.js $(BUILD_DIR)/xterm.css $(BUILD_DIR)/fs2json.py $(BUILD_DIR)/copy-to-sha256.py
+deps: $(BUILD_DIR)/libv86.js $(BUILD_DIR)/v86.wasm $(BUILD_DIR)/seabios.bin $(BUILD_DIR)/vgabios.bin $(BUILD_DIR)/xterm.js $(BUILD_DIR)/xterm.css
 
 $(BUILD_DIR)/libv86.js:
 	mkdir -p $(BUILD_DIR)
@@ -30,14 +30,6 @@ $(BUILD_DIR)/xterm.js:
 $(BUILD_DIR)/xterm.css:
 	mkdir -p $(BUILD_DIR)
 	curl -L -o $@ $(XTERM_CDN)/css/xterm.css
-
-$(BUILD_DIR)/fs2json.py:
-	mkdir -p $(BUILD_DIR)
-	curl -L -o $@ $(V86_RAW)/tools/fs2json.py
-
-$(BUILD_DIR)/copy-to-sha256.py:
-	mkdir -p $(BUILD_DIR)
-	curl -L -o $@ $(V86_RAW)/tools/copy-to-sha256.py
 
 rootfs: deps
 	bash scripts/build-rootfs.sh
