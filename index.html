@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux in your browser — Yutaro Watanabe</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0/css/xterm.css">
+</head>
+<body>
+    <div id="loading-screen">
+        <pre id="loading-art"></pre>
+        <p id="loading-text">Booting Alpine Linux in your browser via WebAssembly...</p>
+        <p id="loading-subtext">This is actually running a full Linux OS in your browser via WebAssembly.<br>
+        No, this is not a joke — it's actually running a full OS in your browser.</p>
+        <pre id="boot-log"></pre>
+    </div>
+    <div id="terminal"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0/lib/xterm.js"></script>
+    <script src="libv86.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

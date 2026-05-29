@@ -1,0 +1,12 @@
+# ~/.profile
+
+export HOME=/home/guest
+export TERM=xterm-256color
+export EDITOR=vim
+export PAGER=less
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+# Source bashrc when available
+if [ -f "$HOME/.bashrc" ]; then
+    . "$HOME/.bashrc"
+fi

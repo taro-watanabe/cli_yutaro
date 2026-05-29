@@ -1,0 +1,85 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+}
+
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #0a0a0a;
+    z-index: 100;
+    overflow-y: auto;
+    padding: 20px 0;
+}
+
+#loading-art {
+    color: #00ff41;
+    font-size: 5px;
+    line-height: 1.0;
+    margin-bottom: 16px;
+    letter-spacing: 0;
+}
+
+#loading-text {
+    color: #00ff41;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+#loading-subtext {
+    color: #888;
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+#boot-log {
+    width: 90%;
+    max-width: 800px;
+    max-height: 40vh;
+    overflow-y: auto;
+    color: #aaa;
+    font-size: 11px;
+    line-height: 1.3;
+    white-space: pre-wrap;
+    word-break: break-all;
+    padding: 8px;
+    border: 1px solid #222;
+    background: #050505;
+    margin-top: 8px;
+}
+
+#boot-log:empty {
+    display: none;
+}
+
+#loading-screen.hidden {
+    display: none;
+}
+
+#terminal {
+    width: 100%;
+    height: 100%;
+}
+
+#terminal .xterm {
+    height: 100%;
+    padding: 4px;
+}

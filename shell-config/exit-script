@@ -1,0 +1,3 @@
+#!/bin/sh
+# /usr/local/bin/exit — triggers poweroff so v86 fires stop event → JS redirect
+exec poweroff
