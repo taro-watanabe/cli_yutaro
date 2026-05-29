@@ -25,9 +25,6 @@ RUN for i in devfs dmesg mdev hwdrivers; do rc-update add $i sysinit; done
 RUN for i in hwclock modules sysctl hostname syslog bootmisc; do rc-update add $i boot; done
 RUN rc-update add killprocs shutdown
 
-# Generate initramfs with 9p and virtio modules
-RUN mkinitfs -F "base virtio 9p" $(cat /usr/share/kernel/$KERNEL/kernel.release)
-
 # Copy shared assets
 COPY ascii-loading.txt /etc/motd
 COPY shell-config/bashrc /home/guest/.bashrc
