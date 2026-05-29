@@ -50,8 +50,8 @@ const BOOT_CONFIG: BootConfig = {
   rootfsManifest: "alpine-fs.json",
   kernelCmdline:
     "rw root=host9p rootfstype=9p rootflags=trans=virtio,cache=loose modules=virtio_pci tsc=reliable console=ttyS0",
-  memorySize: 512 * 1024 * 1024,
-  vgaMemorySize: 8 * 1024 * 1024,
+  memorySize: 128 * 1024 * 1024,
+  vgaMemorySize: 2 * 1024 * 1024,
   redirectUrl: "https://yutarowatanabe.com",
   promptPattern: "guest@cli.yutarowatanabe.com",
   bootTimeoutMs: 30_000,
