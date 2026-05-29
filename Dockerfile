@@ -6,7 +6,7 @@ ENV KERNEL=virt
 RUN apk add openrc alpine-base agetty alpine-conf \
     linux-$KERNEL linux-firmware-none \
     vim python3 nodejs git tree nano \
-    bash sudo
+    bash sudo cpio
 
 # Register bash as a valid login shell
 RUN grep -q /bin/bash /etc/shells || echo /bin/bash >> /etc/shells
@@ -38,3 +38,6 @@ COPY content/ /home/guest/
 
 # Ensure guest owns everything in their home
 RUN chown -R guest:guest /home/guest
+
+# Pack entire rootfs into a cpio initramfs (exclude the archive itself)
+RUN cd / && find . -not -path './initramfs.cpio.gz' -print0 | cpio -o -0 -H newc --quiet | gzip -9 > /initramfs.cpio.gz
