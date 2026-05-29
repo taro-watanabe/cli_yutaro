@@ -13,13 +13,16 @@ echo "Creating container..."
 docker rm "$CONTAINER_NAME" 2>/dev/null || true
 docker create --platform linux/386 -t -i --name "$CONTAINER_NAME" "$IMAGE_NAME"
 
-echo "Extracting kernel and initramfs..."
+echo "Extracting boot files..."
 mkdir -p "$BUILD_DIR"
-docker cp "$CONTAINER_NAME:/boot/vmlinuz-virt" "$BUILD_DIR/bzImage"
-docker cp "$CONTAINER_NAME:/initramfs.cpio.gz" "$BUILD_DIR/initramfs.cpio.gz"
+docker cp "$CONTAINER_NAME:/output/vmlinuz" "$BUILD_DIR/vmlinuz"
+docker cp "$CONTAINER_NAME:/output/initrd.img" "$BUILD_DIR/initrd.img"
+docker cp "$CONTAINER_NAME:/output/disk.img" "$BUILD_DIR/disk.img"
 
 echo "Cleaning up..."
 docker rm "$CONTAINER_NAME" 2>/dev/null || true
 
-INITRD_SIZE=$(du -h "$BUILD_DIR/initramfs.cpio.gz" | cut -f1)
-echo "Done. bzImage and initramfs.cpio.gz ($INITRD_SIZE) created in $BUILD_DIR/"
+KERNEL_SIZE=$(du -h "$BUILD_DIR/vmlinuz" | cut -f1)
+INITRD_SIZE=$(du -h "$BUILD_DIR/initrd.img" | cut -f1)
+DISK_SIZE=$(du -h "$BUILD_DIR/disk.img" | cut -f1)
+echo "Done. vmlinuz ($KERNEL_SIZE) + initrd ($INITRD_SIZE) + disk.img ($DISK_SIZE) in $BUILD_DIR/"

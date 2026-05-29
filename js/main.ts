@@ -14,6 +14,7 @@ interface V86Options {
   vga_bios: { url: string };
   bzimage: { url: string };
   initrd: { url: string };
+  hda: { url: string; async?: boolean };
   cmdline: string;
   serial_console: {
     type: "xtermjs";
@@ -30,7 +31,8 @@ interface BootConfig {
   readonly vgabiosUrl: string;
   readonly bzimageUrl: string;
   readonly initrdUrl: string;
-  readonly kernelCmdline: string;
+  readonly hdaUrl: string;
+  readonly cmdline: string;
   readonly memorySize: number;
   readonly vgaMemorySize: number;
   readonly redirectUrl: string;
@@ -43,10 +45,11 @@ const BOOT_CONFIG: BootConfig = {
   wasmPath: "v86.wasm",
   biosUrl: "seabios.bin",
   vgabiosUrl: "vgabios.bin",
-  bzimageUrl: "bzImage",
-  initrdUrl: "initramfs.cpio.gz",
-  kernelCmdline: "rw console=ttyS0 tsc=reliable",
-  memorySize: 64 * 1024 * 1024,
+  bzimageUrl: "vmlinuz",
+  initrdUrl: "initrd.img",
+  hdaUrl: "disk.img",
+  cmdline: "console=ttyS0 tsc=reliable",
+  memorySize: 128 * 1024 * 1024,
   vgaMemorySize: 2 * 1024 * 1024,
   redirectUrl: "https://yutarowatanabe.com",
   promptPattern: "guest@cli.yutarowatanabe.com",
@@ -140,7 +143,8 @@ function createEmulator(container: HTMLElement): V86Emulator {
     vga_bios: { url: BOOT_CONFIG.vgabiosUrl },
     bzimage: { url: BOOT_CONFIG.bzimageUrl },
     initrd: { url: BOOT_CONFIG.initrdUrl },
-    cmdline: BOOT_CONFIG.kernelCmdline,
+    hda: { url: BOOT_CONFIG.hdaUrl },
+    cmdline: BOOT_CONFIG.cmdline,
     serial_console: { type: "xtermjs", container },
     autostart: true,
   });

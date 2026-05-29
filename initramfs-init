@@ -1,0 +1,24 @@
+#!/bin/sh
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+KVER=$(ls /lib/modules/)
+insmod /lib/modules/$KVER/sd_mod.ko
+insmod /lib/modules/$KVER/squashfs.ko
+insmod /lib/modules/$KVER/overlay.ko
+
+i=0
+while [ ! -b /dev/sda ] && [ $i -lt 10 ]; do
+    sleep 1
+    i=$((i + 1))
+done
+
+mount -t squashfs /dev/sda /mnt/rootfs
+mount -t tmpfs tmpfs /mnt/overlay
+mkdir -p /mnt/overlay/upper /mnt/overlay/work
+mount -t overlay overlay -o lowerdir=/mnt/rootfs,upperdir=/mnt/overlay/upper,workdir=/mnt/overlay/work /mnt/merged
+mkdir -p /mnt/merged/proc /mnt/merged/sys /mnt/merged/dev /mnt/merged/run /mnt/merged/tmp
+mount -t proc proc /mnt/merged/proc
+mount -t sysfs sysfs /mnt/merged/sys
+mount -t devtmpfs devtmpfs /mnt/merged/dev
+exec switch_root /mnt/merged /sbin/init

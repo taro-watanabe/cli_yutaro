@@ -3,9 +3,8 @@
 BUILD_DIR := build
 V86_RELEASE := https://github.com/copy/v86/releases/download/latest
 V86_RAW := https://raw.githubusercontent.com/copy/v86/master
-XTERM_CDN := https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0
 
-deps: $(BUILD_DIR)/libv86.js $(BUILD_DIR)/v86.wasm $(BUILD_DIR)/seabios.bin $(BUILD_DIR)/vgabios.bin $(BUILD_DIR)/xterm.js $(BUILD_DIR)/xterm.css
+deps: $(BUILD_DIR)/libv86.js $(BUILD_DIR)/v86.wasm $(BUILD_DIR)/seabios.bin $(BUILD_DIR)/vgabios.bin
 
 $(BUILD_DIR)/libv86.js:
 	mkdir -p $(BUILD_DIR)
@@ -23,18 +22,10 @@ $(BUILD_DIR)/vgabios.bin:
 	mkdir -p $(BUILD_DIR)
 	curl -L -o $@ $(V86_RAW)/bios/vgabios.bin
 
-$(BUILD_DIR)/xterm.js:
-	mkdir -p $(BUILD_DIR)
-	curl -L -o $@ $(XTERM_CDN)/lib/xterm.js
-
-$(BUILD_DIR)/xterm.css:
-	mkdir -p $(BUILD_DIR)
-	curl -L -o $@ $(XTERM_CDN)/css/xterm.css
-
-rootfs: deps
+rootfs:
 	bash scripts/build-rootfs.sh
 
-site: rootfs
+site: deps rootfs
 	npm install
 	npx tsc
 	cp index.html $(BUILD_DIR)/

@@ -38,5 +38,34 @@ COPY content/ /home/guest/
 # Ensure guest owns everything in their home
 RUN chown -R guest:guest /home/guest
 
-# Pack entire rootfs into a cpio initramfs (exclude the archive itself)
-RUN cd / && find . -not -path './initramfs.cpio.gz' -print0 | cpio -o -0 -H newc --quiet | gzip -9 > /initramfs.cpio.gz
+# --- Build squashfs rootfs and small initramfs ---
+
+RUN apk add --no-cache squashfs-tools
+
+# Create squashfs from rootfs (exclude virtual filesystems)
+RUN mksquashfs / /tmp/rootfs.squashfs -comp gzip -no-progress \
+    -e /sys /proc /dev /run /tmp /tmp/rootfs.squashfs
+
+# Create small initramfs with kernel modules and custom init
+COPY initramfs-init /tmp/initramfs-init
+RUN KVER=$(ls /lib/modules/) && \
+    mkdir -p /tmp/initrd/bin /tmp/initrd/lib /tmp/initrd/dev /tmp/initrd/proc /tmp/initrd/sys && \
+    cp /lib/ld-musl-i386.so.1 /tmp/initrd/lib/ && \
+    mkdir -p /tmp/initrd/lib/modules/$KVER && \
+    mkdir -p /tmp/initrd/mnt/rootfs && \
+    mkdir -p /tmp/initrd/mnt/overlay/upper /tmp/initrd/mnt/overlay/work /tmp/initrd/mnt/merged && \
+    cp /bin/busybox /tmp/initrd/bin/busybox && \
+    cd /tmp/initrd/bin && \
+    for cmd in sh mount umount insmod switch_root mkdir sleep mknod ls; do ln -s busybox $cmd; done && \
+    cp /lib/modules/$KVER/kernel/drivers/scsi/sd_mod.ko.gz /tmp/initrd/lib/modules/$KVER/ && \
+    cp /lib/modules/$KVER/kernel/fs/squashfs/squashfs.ko.gz /tmp/initrd/lib/modules/$KVER/ && \
+    cp /lib/modules/$KVER/kernel/fs/overlayfs/overlay.ko.gz /tmp/initrd/lib/modules/$KVER/ && \
+    gunzip /tmp/initrd/lib/modules/$KVER/*.gz && \
+    cp /tmp/initramfs-init /tmp/initrd/init && chmod +x /tmp/initrd/init && \
+    cd /tmp/initrd && find . -print0 | cpio -o -0 -H newc --quiet | gzip -9 > /tmp/initramfs.cpio.gz
+
+# Stage outputs
+RUN mkdir -p /output && \
+    cp /boot/vmlinuz-virt /output/vmlinuz && \
+    cp /tmp/initramfs.cpio.gz /output/initrd.img && \
+    cp /tmp/rootfs.squashfs /output/disk.img
